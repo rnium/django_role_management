@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from environ import environ
 
+
 env = environ.Env(
     DEBUG=(bool, False)
 )
@@ -138,4 +139,22 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ]
+}
+
+
+PERMS_CODENAMES_MAP = {
+    'read': ['view_%s'],
+    'create': ['add_%s'],
+    'update': ['change_%s'],
+    'delete': ['delete_%s'],
+}
+
+PERMS_MAP = {
+    'GET': ['%(app_label)s.view_%(model_name)s'],
+    'OPTIONS': [],
+    'HEAD': [],
+    'POST': ['%(app_label)s.add_%(model_name)s'],
+    'PUT': ['%(app_label)s.change_%(model_name)s'],
+    'PATCH': ['%(app_label)s.change_%(model_name)s'],
+    'DELETE': ['%(app_label)s.delete_%(model_name)s'],
 }

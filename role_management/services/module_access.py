@@ -11,7 +11,7 @@ def save_module_access(role, access: dict[str, int] | None):
             module = module,
             group=role
         )
-        if not mod_access:
+        if (not mod_access) and permissions:
             mod_access = ModuleAccess.objects.create(
                 module=module,
                 group=role,
@@ -20,6 +20,6 @@ def save_module_access(role, access: dict[str, int] | None):
         else:
             if permissions == 0:
                 mod_access.delete()
-                return
+                continue
             mod_access.update(permissions=permissions)
         sync_module_permissions(role, module, permissions)

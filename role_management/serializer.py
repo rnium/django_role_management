@@ -1,7 +1,8 @@
 from django.db import transaction
 from django.contrib.auth.models import Group as Role
 from rest_framework import serializers
-from .models import Module, ModuleAccess
+from .enums import Actions
+from .models import Module
 from .services import module_access
 
 class PermissionField(serializers.Field):
@@ -10,7 +11,7 @@ class PermissionField(serializers.Field):
             'value': action.value,
             'shift': action.value.bit_length() - 1
         }
-        for action in ModuleAccess.Actions
+        for action in Actions
     }
     
     def __init__(self, *args, **kwargs):

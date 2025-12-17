@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator
-from enum import IntFlag
+from .utils import has_permission
 
 
 class ModuleContentType(models.Model):
@@ -26,20 +26,10 @@ class Module(models.Model):
     )
     
     def __str__(self) -> str:
-        return self.name
-    
-    @staticmethod
-    def has_permission(permissions, action) -> bool:
-        return (permissions & action) != 0
+        return self.name    
 
 
-class ModuleAccess(models.Model):
-    class Actions(IntFlag):
-        read   = 1 << 0
-        create = 1 << 1
-        update = 1 << 2
-        delete = 1 << 3
-    
+class ModuleAccess(models.Model):    
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='access')
     
@@ -56,4 +46,4 @@ class ModuleAccess(models.Model):
         ]
     
     def has_permission(self, action: int):
-        return Module.has_permission(self.permissions, action)
+        return has_permission(self.permissions, action)
