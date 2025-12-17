@@ -5,7 +5,6 @@ from .models import Module, ModuleAccess
 from .services import module_access
 
 class PermissionField(serializers.Field):
-    MODULE_NAMES = [mod.name for mod in Module.objects.all()]
     ACTION_MAP = {
         action.name: {
             'value': action.value,
@@ -38,11 +37,12 @@ class PermissionField(serializers.Field):
     def to_internal_value(self, data):
         if not isinstance(data, dict):
             self.fail('invalid_format')
+        MODULE_NAMES = [mod.name for mod in Module.objects.all()]
         val = {}
         for module, access in data.items():
             if not (isinstance(access, dict) and isinstance(module, str)):
                 self.fail('invalid_format')
-            if module not in self.MODULE_NAMES:
+            if module not in MODULE_NAMES:
                 self.fail('module_unavailable')
             if len(access) != len(self.ACTION_MAP):
                 self.fail('module_insufficient_perms')
