@@ -45,7 +45,7 @@ class PermissionField(serializers.Field):
                 self.fail('invalid_format')
             if module not in MODULE_NAMES:
                 self.fail('module_unavailable')
-            if len(access) != len(self.ACTION_MAP):
+            if len(access) < len(self.ACTION_MAP):
                 self.fail('module_insufficient_perms')
             permissions = 0
             for action, perm in access.items():
@@ -57,7 +57,7 @@ class PermissionField(serializers.Field):
                 except Exception:
                     self.fail('invalid_action_permission')
                     continue
-                permissions ^= (perm << self.ACTION_MAP[action]["shift"])
+                permissions |= (perm << self.ACTION_MAP[action]["shift"])
             val[module] = permissions
         return val
 
@@ -82,5 +82,3 @@ class RoleSerializer(serializers.ModelSerializer):
         res = super().update(instance, validated_data)            
         module_access.save_module_access(instance, access)
         return res
-    
-    
